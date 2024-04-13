@@ -1,5 +1,5 @@
 behavior Subtraction {
-    action subtract(a, b) {
+    action subtract(int a, int b) {
         let result = a - b;
         Console.print(a + " - " + b + " = " + result);
         return result;

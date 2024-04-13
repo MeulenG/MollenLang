@@ -1,11 +1,11 @@
 behavior Greeting {
-    action greet(name) {
+    action greet(string name) {
         Console.print("Hello, " + name);
     }
 }
 
 behavior Farewell {
-    action sayGoodbye(name) {
+    action sayGoodbye(string name) {
         Console.print("Goodbye, " + name);
     }
 }

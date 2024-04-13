@@ -1,5 +1,5 @@
 behavior Multiplication {
-    action multiply(a, b) {
+    action multiply(int a, int b) {
         let result = a * b;
         Console.print(a + " * " + b + " = " + result);
         return result;

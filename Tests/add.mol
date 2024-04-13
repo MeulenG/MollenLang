@@ -1,5 +1,5 @@
 behavior Addition {
-    action add(a, b) {
+    action add(int a, int b) {
         let result = a + b;
         Console.print(a + " + " + b + " = " + result);
         return result;

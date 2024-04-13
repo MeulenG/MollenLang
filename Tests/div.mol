@@ -1,5 +1,5 @@
 behavior Division {
-    action divide(a, b) {
+    action divide(int a, int b) {
         if (b != 0) {
             let result = a / b;
             Console.print(a + " / " + b + " = " + result);
