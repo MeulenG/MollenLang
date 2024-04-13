@@ -1,0 +1,11 @@
+behavior Multiplication {
+    action multiply(a, b) {
+        let result = a * b;
+        Console.print(a + " * " + b + " = " + result);
+        return result;
+    }
+}
+
+object mul inherits Multiplication
+
+mul.multiply(10, 10);

@@ -1,0 +1,16 @@
+behavior Greeting {
+    action greet(name) {
+        Console.print("Hello, " + name);
+    }
+}
+
+behavior Farewell {
+    action sayGoodbye(name) {
+        Console.print("Goodbye, " + name);
+    }
+}
+
+object socialBot inherits Greeting, Farewell;
+
+socialBot.greet("Alice");     // Outputs: Hello, Alice
+socialBot.sayGoodbye("Bob");  // Outputs: Goodbye, Bob

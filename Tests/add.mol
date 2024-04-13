@@ -1,0 +1,11 @@
+behavior Addition {
+    action add(a, b) {
+        let result = a + b;
+        Console.print(a + " + " + b + " = " + result);
+        return result;
+    }
+}
+
+object adder inherits Addition
+
+adder.add(20, 20);

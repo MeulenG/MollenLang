@@ -1,0 +1,17 @@
+behavior Division {
+    action divide(a, b) {
+        if (b != 0) {
+            let result = a / b;
+            Console.print(a + " / " + b + " = " + result);
+            return result;
+        } else {
+            Console.print("Error: Division by zero");
+            return null;
+        }
+    }
+}
+
+object div inherits Division
+
+div.divide(8, 2);
+div.div(5, 0);
