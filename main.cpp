@@ -12,6 +12,12 @@ int main(int argc, char* argv[]) {
     }
 
     Lexer lex;
-    lex.scanFile(argv[1], "testfile.txt", "newfile.txt");
+    Token tok;
+    lex.readFileDescriptor(argv[1], "testfile.txt");
+    for (int token = lex.Tokenize(argv[1]); token != tok.TOKEN_EOF; token++) // should be .getnext or smth
+    {
+        printf("%d \n", token);
+    }
+    
     return 0;
 }

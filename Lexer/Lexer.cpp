@@ -10,81 +10,69 @@
 #include <sys/sendfile.h>
 #include <sys/stat.h>
 
-int Lexer::scanFile(const char *fileName1, const char *fileName2, const char *fileName3) {
+int Lexer::readAndRemoveWS(int fd_in, int fd_out) {
 	// local variables
-	int line = 1;
 	char c;
+	int line = 0;
 	int is_not_ok = EXIT_FAILURE;
 
-	// Copy the file for error handling
-	int source_fd = open(fileName1, O_RDONLY, 0);
-	if (source_fd < 0)
-	{
-		perror("open source");
-		return is_not_ok = EXIT_FAILURE;
-	}
-	int temp_fd = open(fileName2, O_RDWR | O_CREAT | 	O_TRUNC, 0666);
-	if (temp_fd < 0)
-	{
-		perror("open target");
-		return is_not_ok = EXIT_FAILURE;
-	}
-
-	while (read(source_fd, &c, 1) > 0) {
+	while (read(fd_in, &c, 1) > 0) {
         if (c != ' ' && c != '\t' && c != '\n') {
-            if (write(temp_fd, &c, 1) == -1) {
-                perror("Write to copied source program failed!");
-                close(source_fd);
-                close(temp_fd);
-                return is_not_ok = EXIT_FAILURE;
-            }
-        }
+			if (createCopyFromMemory(fd_out, &c, 1) == -1)
+			{
+				perror("Write to copied source program failed!");
+				return is_not_ok = EXIT_FAILURE;
+			}
+		}
 		if (c == '\n')
 		{
 			line++;
 		}
     }
-	close(source_fd);
-	close(temp_fd);
+	return is_not_ok;
+}
 
-    source_fd = open(fileName2, O_RDONLY);  // Reopen file
-    int target_fd = open(fileName3, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-    if (target_fd == -1 || source_fd == -1) {
-        perror("Failed to open file for sendfile");
-        return EXIT_FAILURE;
-    }
-	struct stat stat;
-	int r = fstat(source_fd, &stat);
-	if (r < 0)
+int Lexer::readFileDescriptor(const char *file, const char *file2) {
+	// local variables
+	int is_not_ok = EXIT_FAILURE;
+	
+	int source_fd = open(file, O_RDWR, 0);
+	if (source_fd < 0)
 	{
-		perror("fstat");
+		perror("open source");
 		return is_not_ok = EXIT_FAILURE;
 	}
-	off_t offset = 0;
-	ssize_t bytes_sent = 0;
-	ssize_t total_bytes_sent = 0;
-	while (offset < stat.st_size) {
-		bytes_sent = sendfile(target_fd, source_fd, &offset, stat.st_size - offset);
-		total_bytes_sent += bytes_sent;
-		if (bytes_sent < 0) {
-			perror("\nsendfile\n");
-			return EXIT_FAILURE;
-		}
+
+	int target_fd = open(file2, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (target_fd < 0)
+	{
+		perror("open target");
+		return is_not_ok = EXIT_FAILURE;
 	}
-	if (total_bytes_sent != stat.st_size) {
-		fprintf(stderr, "\nsendfile: copied file truncated to %zd bytes\n", bytes_sent);
-		return EXIT_FAILURE;
-	} else {
-		printf("\nsendfile: %zd bytes copied\n", total_bytes_sent);
-	}
+	
 
-	close(source_fd); // source file
-	close(target_fd); // target file
-
-	unlink(fileName2);  // Clean up the temporary file
-
-    return is_not_ok;
+	readAndRemoveWS(source_fd, target_fd);
+	close(source_fd);
+	close(target_fd);
+    return is_not_ok = EXIT_FAILURE;
 }
+
+int Lexer::createCopyFromMemory(int fd, const void *buf, size_t n) {
+    ssize_t bytesWritten = write(fd, buf, n);
+
+    if (bytesWritten == -1) {
+        perror("Failed to write to file");
+        return EXIT_FAILURE;
+    }
+    if (static_cast<size_t>(bytesWritten) != n) {
+        perror("Incomplete write");
+        return EXIT_FAILURE;
+    }
+
+    return EXIT_SUCCESS;
+}
+
+
 
 int Lexer::Tokenize(const char *fileName) {
 	int line = 1;
@@ -123,11 +111,17 @@ int Lexer::Tokenize(const char *fileName) {
 					return tok.TOKEN_ID;
 				}
 			}
-			else if(isdigit(c)) {
-
+			else if(isdigit(c) || c == '.') {
+				std::string NumStr;
+				do
+				{
+					NumStr += c;
+					c = getchar();
+				} while (isdigit(c) || c == '.');
+				return tok.TOKEN_NUM;
 			}
 			else { 
-
+				return tok.TOKEN_ID;
 			}
 			if (ferror(fp))
 			puts("I/O error when reading");
