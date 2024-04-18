@@ -9,88 +9,200 @@
 #include <fcntl.h>
 #include <sys/sendfile.h>
 #include <sys/stat.h>
+#include <vector>
 
-int Lexer::readAndRemoveWS(int fd_in, int fd_out) {
-	// local variables
-	char c;
-	int line = 0;
-	int is_not_ok = EXIT_FAILURE;
-
-	while (read(fd_in, &c, 1) > 0) {
-        if (c != ' ' && c != '\t' && c != '\n') {
-			if (createCopyFromMemory(fd_out, &c, 1) == -1)
-			{
-				perror("Write to copied source program failed!");
-				return is_not_ok = EXIT_FAILURE;
-			}
-		}
-		if (c == '\n')
-		{
-			line++;
-		}
+// Seek to the end of the file to find the size
+int Lexer::getFileSize(int fd_in) {
+    off_t fileSize = lseek(fd_in, 0, SEEK_END);
+    if (fileSize == -1) {
+        return -1;
     }
-	return is_not_ok;
+
+    if (lseek(fd_in, 0, SEEK_SET) == -1) {
+        return -1;
+    }
+
+    return fileSize;
 }
 
-int Lexer::readFileDescriptor(const char *file, const char *file2) {
-	// local variables
-	int is_not_ok = EXIT_FAILURE;
+
+// Legit useless function lmfao
+int Lexer::openFileDescriptor(const char *file, const char *file2) {
+	int is_ok = EXIT_FAILURE;
+
 	
-	int source_fd = open(file, O_RDWR, 0);
+	int source_fd = open(file, O_RDWR, O_APPEND, 0);
 	if (source_fd < 0)
 	{
 		perror("open source");
-		return is_not_ok = EXIT_FAILURE;
+		return is_ok = EXIT_FAILURE;
 	}
 
 	int target_fd = open(file2, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (target_fd < 0)
 	{
 		perror("open target");
-		return is_not_ok = EXIT_FAILURE;
+		return is_ok = EXIT_FAILURE;
 	}
 	
-
-	readAndRemoveWS(source_fd, target_fd);
 	close(source_fd);
 	close(target_fd);
-    return is_not_ok = EXIT_FAILURE;
+    return is_ok = EXIT_FAILURE;
 }
 
-int Lexer::createCopyFromMemory(int fd, const void *buf, size_t n) {
-    ssize_t bytesWritten = write(fd, buf, n);
 
+std::vector<char> Lexer::readAndRemoveWS(int fd_in, off_t fileSize)
+{
+    off_t i = 0, j = 0;
+    std::vector<char> original(fileSize);
+	std::vector<char> filtered(fileSize, 0);
+
+    if (read(fd_in, &original[0], fileSize) != fileSize) {
+        perror("Couldn't read entire file");
+    }
+    
+    while (i < fileSize) {
+        char c = original[i++];
+        if (!isspace(c)) {
+            filtered[j++] = c;
+        }
+    }
+
+	return filtered;
+}
+
+void Lexer::copyFile(const char* file, const char* file_out, const std::vector<char>& data) {
+	int is_ok = EXIT_FAILURE;
+
+	int source_fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+	if (source_fd < 0)
+	{
+		perror("Error opening and copying file");
+	}
+
+	int target_fd = open(file_out, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (target_fd < 0)
+	{
+		perror("open target");
+	}
+
+	size_t bytesWritten = write(target_fd, data.data(), data.size());
     if (bytesWritten == -1) {
-        perror("Failed to write to file");
-        return EXIT_FAILURE;
-    }
-    if (static_cast<size_t>(bytesWritten) != n) {
-        perror("Incomplete write");
-        return EXIT_FAILURE;
+        close(source_fd);
+        perror("Error writing to file");
     }
 
-    return EXIT_SUCCESS;
+	close(source_fd);
 }
 
+
+bool Lexer::is_digit(char c) noexcept {
+	switch (c) {
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':
+			return true;
+		default:
+			return false;
+	}
+}
+
+bool Lexer::is_identifier(char c) noexcept {
+	switch (c) {
+		case 'a':
+		case 'b':
+		case 'c':
+		case 'd':
+		case 'e':
+		case 'f':
+		case 'g':
+		case 'h':
+		case 'i':
+		case 'j':
+		case 'k':
+		case 'l':
+		case 'm':
+		case 'n':
+		case 'o':
+		case 'p':
+		case 'q':
+		case 'r':
+		case 's':
+		case 't':
+		case 'u':
+		case 'v':
+		case 'w':
+		case 'x':
+		case 'y':
+		case 'z':
+		case 'A':
+		case 'B':
+		case 'C':
+		case 'D':
+		case 'E':
+		case 'F':
+		case 'G':
+		case 'H':
+		case 'I':
+		case 'J':
+		case 'K':
+		case 'L':
+		case 'M':
+		case 'N':
+		case 'O':
+		case 'P':
+		case 'Q':
+		case 'R':
+		case 'S':
+		case 'T':
+		case 'U':
+		case 'V':
+		case 'W':
+		case 'X':
+		case 'Y':
+		case 'Z':
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':
+		case '_':
+			return true;
+		default:
+			return false;
+	}
+}
 
 
 int Lexer::Tokenize(const char *fileName) {
 	int line = 1;
 	int c; // required for EOF
-	int is_not_ok = EXIT_FAILURE;
+	int is_ok = EXIT_FAILURE;
 	std::string sb; // string buffer
 	Token tok;
 	
 	FILE * fp = fopen(fileName, "r");
     if (!fp) {
         perror ("Error opening provided file");
-		return is_not_ok = EXIT_FAILURE;
+		return is_ok = EXIT_FAILURE;
 	}
 	else {
 		while ((c = fgetc(fp)) != EOF)
 		{
 			// Is identifier? [a-zA-Z][a-zA-Z0-9]*
-			if (isalpha(c))
+			if (is_identifier(c))
 			{
 				sb.clear();
 				do
@@ -111,13 +223,13 @@ int Lexer::Tokenize(const char *fileName) {
 					return tok.TOKEN_ID;
 				}
 			}
-			else if(isdigit(c) || c == '.') {
+			else if(is_digit(c) || c == '.') {
 				std::string NumStr;
 				do
 				{
 					NumStr += c;
 					c = getchar();
-				} while (isdigit(c) || c == '.');
+				} while (is_digit(c) || c == '.');
 				return tok.TOKEN_NUM;
 			}
 			else { 
@@ -127,7 +239,7 @@ int Lexer::Tokenize(const char *fileName) {
 			puts("I/O error when reading");
 			else if (feof(fp)) {
 				puts("End of file is reached successfully");
-				is_not_ok = EXIT_SUCCESS;
+				is_ok = EXIT_SUCCESS;
 			}
 		}
 	}

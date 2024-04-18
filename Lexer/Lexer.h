@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "Token.h"
+#include <vector>
 #pragma once
 
 
@@ -10,15 +11,13 @@ class Lexer
 {
 private:
 public:
-    int line = 1;
-    char peek = ' ';
-    std::string IdentifierStr; // Filled in if tok_identifier
-    double NumVal;             // Filled in if tok_number
-    int currentToken;
-    // int getNextToken() { return currentToken = getToken(); }
-    int readAndRemoveWS(int fd_in, int fd_out);
-    int readFileDescriptor(const char *file, const char *file2);
-    int createCopyFromMemory(int fd, const void *buf, size_t n);
+    int getFileSize(int fd_in);
+    int openFileDescriptor(const char *file, const char *file2);
+    std::vector<char> readAndRemoveWS(int fd_in, off_t fileSize);
+    void copyFile(const char* file, const char* file_out, const std::vector<char>& data);
+    
+    // Lets make this shit readable
+    bool is_digit(char c) noexcept;
+    bool is_identifier(char c) noexcept;
     int Tokenize(const char *fileName);
-
 };
