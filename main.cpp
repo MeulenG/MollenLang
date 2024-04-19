@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include "Lexer/Lexer.h"
+#include "Lexer/Scanner.h"
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -17,24 +18,25 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    Scanner scan;
     Lexer lex;
     Token tok;
-    int source_fd = open(argv[1], O_RDWR, O_APPEND, 0);
+    int source_fd = open(argv[1], O_RDWR, 0);
 	if (source_fd < 0)
 	{
 		perror("open source");
 		return EXIT_FAILURE;
 	}
-    off_t fileSize = ("%d", lex.getFileSize(source_fd));
-    std::vector<char> fileData = lex.readAndRemoveWS(source_fd, fileSize);
-    lex.copyFile(argv[1], "testfile.txt", fileData);
-    close(source_fd);
+    off_t fileSize = ("%d", scan.getFileSize(source_fd));
+    std::vector<char> fileData = scan.readAndRemoveWS(source_fd, fileSize);
+    scan.copyFile("testfile.txt", fileData);
+
     
-    // lex.readFileDescriptor(argv[1], "testfile.txt");
     // for (int token = lex.Tokenize(argv[1]); token != tok.TOKEN_EOF; token++)
     // {
     //     printf("%d \n", token);
     // }
     
+    close(source_fd);
     return 0;
 }
