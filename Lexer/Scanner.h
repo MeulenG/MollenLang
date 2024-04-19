@@ -1,9 +1,14 @@
+#include <cctype>
+#include <fstream>
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
-#include <ctype.h>
-#include "Token.h"
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/sendfile.h>
+#include <sys/stat.h>
 #include <vector>
+#include "Token.h"
 
 
 class Scanner

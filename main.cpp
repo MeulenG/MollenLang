@@ -1,14 +1,6 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-#include "Lexer/Lexer.h"
 #include "Lexer/Scanner.h"
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/sendfile.h>
-#include <sys/stat.h>
-#include <vector>
+#include "Lexer/Lexer.h"
+#include "Lexer/Helper.h"
 
 
 int main(int argc, char* argv[]) {

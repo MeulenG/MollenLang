@@ -9,4 +9,4 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug)
 endif()
 
-add_library(Lexer Lexer.cpp Lexer.h)
+add_library(Lexer Scanner.cpp Scanner.h Helper.cpp Helper.h Token.h Lexer.cpp Lexer.h)

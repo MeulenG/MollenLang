@@ -1,15 +1,4 @@
-#include <cctype>
-#include <fstream>
-#include <iostream>
-#include "Token.h"
 #include "Scanner.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/sendfile.h>
-#include <sys/stat.h>
-#include <vector>
 
 // Seek to the end of the file to find the size
 int Scanner::getFileSize(int fd_in) {
