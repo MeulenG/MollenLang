@@ -64,6 +64,30 @@ std::vector<char> Scanner::readAndRemoveWS(int fd_in, off_t fileSize)
 	return filtered;
 }
 
+std::vector<char> Scanner::cleanComments(int fd_in, off_t fileSize)
+{
+    off_t i = 0, j = 0;
+    std::vector<char> original(fileSize);
+	std::vector<char> filtered(fileSize, 0);
+
+    if (read(fd_in, &original[0], fileSize) != fileSize) {
+        perror("Couldn't read entire file");
+    }
+    
+    while (i < fileSize) {
+        char c = original[i++];
+        if (!isspace(c)) {
+            filtered[j++] = c;
+        }
+		
+		if(c == '\n') {
+			lines++;
+		}
+    }
+
+	return filtered;
+}
+
 void Scanner::copyFile(const char* file_out, const std::vector<char>& data) {
 	int is_ok = EXIT_FAILURE;
 

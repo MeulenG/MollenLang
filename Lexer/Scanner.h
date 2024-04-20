@@ -20,6 +20,9 @@ public:
 
     int getFileSize(int fd_in);
     int openFileDescriptor(const char *file, const char *file2);
+    
     std::vector<char> readAndRemoveWS(int fd_in, off_t fileSize);
+    std::vector<char> Scanner::cleanComments(int fd_in, off_t fileSize);
+    
     void copyFile(const char* file_out, const std::vector<char>& data);
 };

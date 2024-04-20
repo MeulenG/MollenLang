@@ -12,36 +12,30 @@
 // outputting it into the terminal such that we're free
 // from ugly code in main
 
-int Lexer::isTokenIdentifier(char c, FILE* fp, std::string sb) {
-	Token tok;
-	Helper help;
-	// Is identifier? [a-zA-Z][a-zA-Z0-9]*
-	if (help.is_identifier(c))
-	{
-		sb.clear();
-		do
-		{
+std::optional<TokenType::Token> Lexer::isTokenIdentifier(std::ifstream& stream) {
+	char c;
+	if (stream >> c && std::isalpha(c)) {
+		std::string sb;
+		do {
 			sb.push_back(c);
-			c = fgetc(fp);
-		} while (isalnum(c) || c == '_');
-		
-		if (!feof(fp)) ungetc(c, fp);
-		
-		if (sb == "behavior")
-		{
-			return tok.TOKEN_BEHAVIOR;
-		}
-		else if(sb == "action") {
-			return tok.TOKEN_ACTION;
+			stream.get(c);
+		} while (std::isalnum(c) || c == '_');
+
+		if (stream) stream.putback(c);
+
+		if (sb == "behavior") {
+			return TokenType::Token(TokenType::TOKEN_BEHAVIOR, sb);
+		} else if (sb == "action") {
+			return TokenType::Token(TokenType::TOKEN_ACTION, sb);
 		} else {
-			return tok.TOKEN_ID;
+			return TokenType::Token(TokenType::TOKEN_ID, sb);
 		}
 	}
-	return 0;
+	return {};
 }
 
 int Lexer::isTokenNumber(char c, FILE* fp) {
-	Token tok;
+	TokenType tok;
 	double numVal;
 	Helper help;
 	int is_ok = EXIT_FAILURE;
@@ -60,7 +54,7 @@ int Lexer::isTokenNumber(char c, FILE* fp) {
 
 int Lexer::isTokenBinOp(char c, FILE* fp) {
 	int is_ok = EXIT_FAILURE;
-	Token tok;
+	TokenType tok;
 
 	switch (c)
 	{
@@ -93,31 +87,31 @@ int Lexer::isTokenBinOp(char c, FILE* fp) {
 
 
 // using fopen rn, wtf am i doing
-int Lexer::Tokenize(const char *fileName) {
-	int c; // required for EOF
-	int is_ok = EXIT_FAILURE;
-	std::string sb; // string buffer
-	Token tok;
+// int Lexer::Tokenize(const char *fileName) {
+// 	int c; // required for EOF
+// 	int is_ok = EXIT_FAILURE;
+// 	std::string sb; // string buffer
+// 	TokenType tok;
 	
-	FILE * fp = fopen(fileName, "r");
-    if (!fp) {
-        perror ("Error opening provided file");
-		return is_ok = EXIT_FAILURE;
-	}
-	else {
-		while ((c = fgetc(fp)) != EOF)
-		{
-			isTokenIdentifier(c, fp, sb);
-			isTokenNumber(c, fp);
-			isTokenBinOp(c, fp);
-			if (ferror(fp))
-			puts("I/O error when reading");
-			else if (feof(fp)) {
-				puts("End of file is reached successfully");
-				is_ok = EXIT_SUCCESS;
-			}
-		}
-	}
+// 	FILE * fp = fopen(fileName, "r");
+//     if (!fp) {
+//         perror ("Error opening provided file");
+// 		return is_ok = EXIT_FAILURE;
+// 	}
+// 	else {
+// 		while ((c = fgetc(fp)) != EOF)
+// 		{
+// 			isTokenIdentifier(c, fp, sb);
+// 			isTokenNumber(c, fp);
+// 			isTokenBinOp(c, fp);
+// 			if (ferror(fp))
+// 			puts("I/O error when reading");
+// 			else if (feof(fp)) {
+// 				puts("End of file is reached successfully");
+// 				is_ok = EXIT_SUCCESS;
+// 			}
+// 		}
+// 	}
 
-	return is_ok = EXIT_FAILURE;
-}
+// 	return is_ok = EXIT_FAILURE;
+// }
