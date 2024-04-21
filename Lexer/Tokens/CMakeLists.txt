@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(MollenLexer VERSION 1.0 DESCRIPTION "MollenLexer")
+project(MollenTokens VERSION 1.0 DESCRIPTION "MollenLexer")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -10,8 +10,4 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 
-add_subdirectory(Scanner)
-
-add_subdirectory(Helper)
-
-add_library(Lexer Lexer.cpp Lexer.h)
+add_library(Token Token.h)

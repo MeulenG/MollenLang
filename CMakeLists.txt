@@ -13,7 +13,7 @@ add_subdirectory(Lexer)
 
 add_executable(MollenLang main.cpp)
 
-target_link_libraries(MollenLang PUBLIC Lexer)
+target_link_libraries(MollenLang PUBLIC Helper Scanner Lexer)
 
 target_include_directories(MollenLang PUBLIC "${PROJECT_BINARY_DIR}" "include")
 
