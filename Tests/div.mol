@@ -1,9 +1,9 @@
 behavior Division {
-    action divide(int a, int b) {
-        if (b != 0) {
-            let result = a / b;
-            Console.print(a + " / " + b + " = " + result);
-            return result;
+    action divide(def int a, def int b) {
+        if (obj b != 0) {
+            def int result = a / b;
+            Console.print(obj a + " / " + obj b + " = " + obj result);
+            return obj result;
         } else {
             Console.print("Error: Division by zero");
             return null;

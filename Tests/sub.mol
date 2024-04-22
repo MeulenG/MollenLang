@@ -1,8 +1,8 @@
 behavior Subtraction {
-    action subtract(int a, int b) {
-        let result = a - b;
-        Console.print(a + " - " + b + " = " + result);
-        return result;
+    action subtract(def int a, def int b) {
+        def int result = obj a - obj b;
+        Console.print(obj a + " - " + obj b + " = " + obj result);
+        return obj result;
     }
 }
 
