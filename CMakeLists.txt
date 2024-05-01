@@ -11,9 +11,13 @@ endif()
 
 add_subdirectory(Lexer)
 
+add_subdirectory(Parser)
+
+add_subdirectory(Ast)
+
 add_executable(MollenLang main.cpp)
 
-target_link_libraries(MollenLang PUBLIC Helper Scanner Lexer)
+target_link_libraries(MollenLang PUBLIC Ast Scanner Parser Helper Lexer)
 
 target_include_directories(MollenLang PUBLIC "${PROJECT_BINARY_DIR}" "include")
 

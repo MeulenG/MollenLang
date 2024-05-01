@@ -1,6 +1,5 @@
-#include <string>
 #pragma once
-
+#include <string>
 class Token
 {
 private:
@@ -13,7 +12,7 @@ public:
         TOKEN_ID = 256, 
         
         // Keyword Section
-        TOKEN_BEHAVIOR = 257, TOKEN_ACTION = 258, TOKEN_DEF = 259, // TOKEN_IF = 257, // TOKEN_ELSE = 258, // TOKEN_WHILE = 259,
+        TOKEN_BEHAVIOR = 257, TOKEN_ACTION = 258, TOKEN_DEF = 259, TOKEN_EXTERN = 260, // TOKEN_IF = 257, // TOKEN_ELSE = 258, // TOKEN_WHILE = 259,
         // TOKEN_RETURN = 260, // TOKEN_DO = 261, // TOKEN_BREAK = 262,
 
         // Separator/Punctuator Section

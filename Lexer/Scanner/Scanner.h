@@ -1,17 +1,6 @@
 #pragma once
-#include <cctype>
-#include <fstream>
-#include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/sendfile.h>
-#include <sys/stat.h>
 #include <vector>
-#include "../Tokens/Token.h"
-
-
+#include <sys/types.h>
 
 class Scanner
 {

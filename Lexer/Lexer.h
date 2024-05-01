@@ -1,14 +1,14 @@
-#include "Token.h"
-#include <optional>
-#include <fstream>
-
+#pragma once
+#include <string>
 
 class Lexer
 {
 private:
-public:    
-    std::optional<TokenType::Token> isTokenIdentifier(std::ifstream& stream);
-    int isTokenNumber(char c, FILE* fp);
-    int isTokenBinOp(char c, FILE* fp);
-    int Tokenize(const char *fileName);
+public:
+    std::string IdentifierStr;
+    double NumVal;
+
+    int getToken();
+    
+    std::string splitFile(const char* file);
 };

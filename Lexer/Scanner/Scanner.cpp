@@ -1,3 +1,11 @@
+#include <cctype>
+#include <fstream>
+#include <iostream>
+#include <stdio.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <vector>
+#include "../Tokens/Token.h"
 #include "Scanner.h"
 
 // Seek to the end of the file to find the size

@@ -1,4 +1,7 @@
+#include "../Tokens/Token.h"
 #include "Helper.h"
+#include <memory>
+#include "../../Ast/Ast.h"
 
 
 bool Helper::is_digit(char c) noexcept {
@@ -88,4 +91,15 @@ bool Helper::is_identifier(char c) noexcept {
 		default:
 			return false;
 	}
+}
+
+/// LogError* - These are little helper functions for error handling.
+std::unique_ptr<ExprAST> Helper::LogError(const char *Str) {
+	fprintf(stderr, "Error: %s\n", Str);
+	return nullptr;
+}
+
+std::unique_ptr<PrototypeAST> Helper::LogErrorP(const char *Str) {
+	LogError(Str);
+	return nullptr;
 }

@@ -1,117 +1,108 @@
-#include "Token.h"
+#include "Tokens/Token.h"
+#include <optional>
+#include <fstream>
+#include <cstring>
+#include <iostream>
+#include <map>
+#include <unordered_map>
+#include <vector>
 #include "Lexer.h"
-#include "Helper.h"
 
 
-// private function to open file?
-// isTokenIdentifier function
-// isTokenNumber function
-// isTokenBinaryOperator
-// Tokenize should essentially just call the above functions
-// followed by running through the entirety of the file and 
-// outputting it into the terminal such that we're free
-// from ugly code in main
+// getToken - Return the next token from standard input.
+int Lexer::getToken() {
+    static int LastChar = ' ';
 
-std::optional<TokenType::Token> Lexer::isTokenIdentifier(std::ifstream& stream) {
-	char c;
-	if (stream >> c && std::isalpha(c)) {
-		std::string sb;
-		do {
-			sb.push_back(c);
-			stream.get(c);
-		} while (std::isalnum(c) || c == '_');
+    // Skip any whitespace.
+    while (isspace(LastChar))
+        LastChar = getchar();
 
-		if (stream) stream.putback(c);
-
-		if (sb == "behavior") {
-			return TokenType::Token(TokenType::TOKEN_BEHAVIOR, sb);
-		} else if (sb == "action") {
-			return TokenType::Token(TokenType::TOKEN_ACTION, sb);
-		} else {
-			return TokenType::Token(TokenType::TOKEN_ID, sb);
+	if (isalpha(LastChar)) { // identifier: [a-zA-Z][a-zA-Z0-9]*
+		IdentifierStr = LastChar;
+		while (isalnum((LastChar = getchar()))) {
+			IdentifierStr += LastChar;
 		}
-	}
-	return {};
-}
 
-int Lexer::isTokenNumber(char c, FILE* fp) {
-	TokenType tok;
-	double numVal;
-	Helper help;
-	int is_ok = EXIT_FAILURE;
-	if(help.is_digit(c) || c == '.') {
-		std::string NumStr;
-		do
-		{
-			NumStr += c;
-			c = getchar();
-		} while (help.is_digit(c) || c == '.');
-		numVal = strtod(NumStr.c_str(), nullptr);
-		return tok.TOKEN_NUM;
+		if (IdentifierStr == "def") {
+			return Token::Type::TOKEN_DEF;
+		}
+		if (IdentifierStr == "extern") {
+			return Token::Type::TOKEN_EXTERN;
+		}
+		return Token::Type::TOKEN_ID;
 	}
-	return is_ok = EXIT_FAILURE;
-}
 
-int Lexer::isTokenBinOp(char c, FILE* fp) {
-	int is_ok = EXIT_FAILURE;
-	TokenType tok;
+    if (isdigit(LastChar) || LastChar == '.') { // Number: [0-9.]+
+        std::string NumStr;
+        do {
+            NumStr += LastChar;
+            LastChar = getchar();
+        } while (isdigit(LastChar) || LastChar == '.');
 
-	switch (c)
-	{
-	case '+':
-		return tok.TOKEN_PLUS;
-		break;
-	case '-':
-		return tok.TOKEN_MINUS;
-		break;
-	case '*':
-		return tok.TOKEN_TIMES;
-		break;
-	case '/':
-		return tok.TOKEN_DIVIDE;
-		break;
-	case '=':
-		return tok.TOKEN_EQUAL;
-		break;
-	case '<':
-		return tok.TOKEN_LESSTHAN;
-		break;
-	case '>':
-		return tok.TOKEN_GREATERTHAN;
-		break;
-	default:
-		break;
-	}
-	return is_ok = EXIT_FAILURE;
+        NumVal = strtod(NumStr.c_str(), nullptr);
+        return Token::Type::TOKEN_NUM;
+    }
+    if (LastChar == '#') {
+        // Skip comments
+        do {
+            LastChar = getchar();
+        } while (LastChar != EOF && LastChar != '\n' && LastChar != '\r');
+
+        if (LastChar != EOF)
+            return getToken();
+    }
+
+    if (LastChar == EOF)
+        return Token::Type::TOKEN_EOF;
+
+    // Return the character as its ASCII value, and then read the next character
+    int ThisChar = LastChar;
+    LastChar = getchar();
+    return ThisChar;
 }
 
 
-// using fopen rn, wtf am i doing
-// int Lexer::Tokenize(const char *fileName) {
-// 	int c; // required for EOF
-// 	int is_ok = EXIT_FAILURE;
-// 	std::string sb; // string buffer
-// 	TokenType tok;
-	
-// 	FILE * fp = fopen(fileName, "r");
-//     if (!fp) {
-//         perror ("Error opening provided file");
-// 		return is_ok = EXIT_FAILURE;
-// 	}
-// 	else {
-// 		while ((c = fgetc(fp)) != EOF)
-// 		{
-// 			isTokenIdentifier(c, fp, sb);
-// 			isTokenNumber(c, fp);
-// 			isTokenBinOp(c, fp);
-// 			if (ferror(fp))
-// 			puts("I/O error when reading");
-// 			else if (feof(fp)) {
-// 				puts("End of file is reached successfully");
-// 				is_ok = EXIT_SUCCESS;
-// 			}
-// 		}
-// 	}
+std::string Lexer::splitFile(const char* file) {
+	std::string str("if (x == 10) { y = 100; } else { y = 200; }");
+    std::unordered_map<std::string, std::string> tokenMap = {
+        {"if", "KEYWORD_IF"},
+        {"else", "KEYWORD_ELSE"},
+        {"==", "OPERATOR_EQ"},
+        {"=", "OPERATOR_ASSIGN"},
+        {"(", "PAREN_OPEN"},
+        {")", "PAREN_CLOSE"},
+        {"{", "BRACE_OPEN"},
+        {"}", "BRACE_CLOSE"},
+        {";", "SEMICOLON"}
+    };
 
-// 	return is_ok = EXIT_FAILURE;
-// }
+    char *cstr = new char[str.length() + 1];
+    std::strcpy(cstr, str.c_str());
+    const char *delimiters = " (){};";
+
+    char *p = std::strtok(cstr, delimiters);
+    while (p != nullptr) {
+        std::string token = p;
+        if (tokenMap.find(token) != tokenMap.end()) {
+            std::cout << "Token: \"" << token << "\", Type: " << tokenMap[token] << '\n';
+        } else {
+            // Check if it's a number
+            bool isNumber = true;
+            for (char c : token) {
+                if (!isdigit(c)) {
+                    isNumber = false;
+                    break;
+                }
+            }
+            if (isNumber) {
+                std::cout << "Token: \"" << token << "\", Type: NUMBER\n";
+            } else {
+                std::cout << "Token: \"" << token << "\", Type: IDENTIFIER\n";
+            }
+        }
+        p = std::strtok(nullptr, delimiters);
+    }
+
+    delete[] cstr;
+	// return tokens;
+}
