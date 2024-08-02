@@ -37,6 +37,7 @@ public:
     std::map<char, int> BinopPrecedence;
 
     int GetTokPrecedence();
+    void InitializeModule();
     void HandleDefinition();
     void HandleExtern();
     void HandleTopLevelExpression();

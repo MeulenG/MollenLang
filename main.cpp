@@ -7,31 +7,11 @@
 #include <fstream>
 #include <iostream>
 #include <stdio.h>
-#include <unistd.h>
 #include <fcntl.h>
 #include <vector>
 
 
 int main(int argc, char* argv[]) {
-    // // Check if a filename was passed
-    // if (argc < 2) {
-    //     std::cerr << "Usage: " << argv[0] << " SOURCE_PROGRAM\n";
-    //     return 1;
-    // }
-
-    // Scanner scan;
-    // int source_fd = open(argv[1], O_RDWR, 0);
-	// if (source_fd < 0)
-	// {
-	// 	perror("open source");
-	// 	return EXIT_FAILURE;
-	// }
-    // off_t fileSize = (scan.getFileSize(source_fd));
-    // std::vector<char> fileData = scan.readAndRemoveWS(source_fd, fileSize);
-    // scan.copyFile("testfile.txt", fileData);
-
-    // close(source_fd);
-
     Lexer lex;
     Parser parser;
     // Install standard binary operators.
@@ -41,7 +21,9 @@ int main(int argc, char* argv[]) {
     parser.BinopPrecedence['-'] = 20;
     parser.BinopPrecedence['*'] = 40; // highest.
     fprintf(stderr, "ready> ");
-    parser.currentToken = parser.getNextToken();    
+    parser.currentToken = parser.getNextToken(); 
+    // Make the module, which holds all the code.
+    parser.InitializeModule();   
     /// top ::= definition | external | expression | ';'
     while (true) {
         fprintf(stderr, "ready> ");

@@ -104,5 +104,5 @@ std::string Lexer::splitFile(const char* file) {
     }
 
     delete[] cstr;
-	// return tokens;
+	return p;
 }

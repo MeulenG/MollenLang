@@ -1,5 +1,6 @@
 #include "Parser.h"
 #include "../Ast/Ast.h"
+#include "../CodeGen/Codegen.h"
 #include "../Lexer/Lexer.h"
 #include "../Lexer/Tokens/Token.h"
 #include "../Lexer/Helper/Helper.h"
@@ -10,6 +11,8 @@
 #include <unordered_map>
 #include <vector>
 #include <iostream>
+
+using namespace llvm;
 
 
 /// LogError* - These are little helper functions for error handling.
@@ -215,6 +218,15 @@ std::unique_ptr<FunctionAST> Parser::ParseTopLevelExpr() {
         return std::make_unique<FunctionAST>(std::move(Proto), std::move(E));
     }
     return nullptr;
+}
+
+void InitializeModule() {
+    // Open a new context and module.
+    TheContext = std::make_unique<LLVMContext>();
+    TheModule = std::make_unique<Module>("my cool jit", *TheContext);
+
+    // Create a new builder for the module.
+    Builder = std::make_unique<IRBuilder<>>(*TheContext);
 }
 
 void Parser::HandleDefinition() {

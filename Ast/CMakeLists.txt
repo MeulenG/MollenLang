@@ -10,3 +10,5 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 add_library(Ast Ast.cpp Ast.h)
+
+target_link_libraries(Ast PRIVATE)
