@@ -1,11 +1,11 @@
 behavior Division {
     action divide(def int a, def int b) {
-        if (obj b != 0) {
+        if (b != 0) {
             def int result = a / b;
-            Console.print(obj a + " / " + obj b + " = " + obj result);
-            return obj result;
+            print(a + " / " + b + " = " + result);
+            return result;
         } else {
-            Console.print("Error: Division by zero");
+            print("Error: Division by zero");
             return null;
         }
     }
@@ -14,4 +14,3 @@ behavior Division {
 object div inherits Division
 
 div.divide(8, 2);
-div.div(5, 0);

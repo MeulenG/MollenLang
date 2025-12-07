@@ -1,16 +1,16 @@
 behavior _Greeting {
-    action greet(string _name) {
-        Console.print("Hello, " + _name);
+    action _greet(string _name) {
+        print("Hello, " + _name);
     }
 }
 
 behavior _Farewell {
     action _sayGoodbye(string _name) {
-        Console.print("Goodbye, " + _name);
+        print("Goodbye, " + _name);
     }
 }
 
 object _socialBot inherits _Greeting, _Farewell;
 
-_socialBot.greet("Alice");     // Outputs: Hello, Alice
-_socialBot.sayGoodbye("Bob");  // Outputs: Goodbye, Bob
+_socialBot._greet("Alice");     // Outputs: Hello, Alice
+_socialBot._sayGoodbye("Bob");  // Outputs: Goodbye, Bob

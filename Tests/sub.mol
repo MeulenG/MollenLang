@@ -1,12 +1,12 @@
 behavior Subtraction {
     action subtract(def int a, def int b) {
-        def int result = obj a - obj b;
-        Console.print(obj a + " - " + obj b + " = " + obj result);
-        return obj result;
+        def int result = a - b;
+        Console.print(a + " - " + b + " = " + result);
+        return result;
     }
 }
 
 
-object calculator inherits Subtraction;
+object sub inherits Subtraction;
 
-calculator.subtract(20, 5);
+sub.subtract(20, 5);
