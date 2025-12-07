@@ -9,7 +9,7 @@ find_package(LLVM REQUIRED CONFIG)
 
 message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
 message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
-
+ 
 
 add_subdirectory(Lexer)
 
@@ -17,9 +17,11 @@ add_subdirectory(Parser)
 
 add_subdirectory(Ast)
 
+add_subdirectory(CodeGen)
+
 add_executable(MollenLang main.cpp)
 
-target_link_libraries(MollenLang PUBLIC Ast Scanner Parser Helper Lexer)
+target_link_libraries(MollenLang PUBLIC Ast Scanner Parser Helper Lexer Codegen Token)
 
 target_include_directories(MollenLang PUBLIC "${PROJECT_BINARY_DIR}" "include")
 

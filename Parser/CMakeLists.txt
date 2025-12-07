@@ -10,3 +10,5 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 add_library(Parser Parser.cpp Parser.h)
+
+target_link_libraries(Parser PUBLIC Token)

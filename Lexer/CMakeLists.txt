@@ -11,7 +11,9 @@ endif()
 
 
 add_subdirectory(Scanner)
-
 add_subdirectory(Helper)
+add_subdirectory(Tokens)
 
 add_library(Lexer Lexer.cpp Lexer.h)
+
+target_link_libraries(Lexer PUBLIC Token)

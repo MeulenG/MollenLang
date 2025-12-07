@@ -10,4 +10,4 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 
-add_library(Token Token.h)
+add_library(Token Token.h Token.cpp)

@@ -2,9 +2,9 @@
 #include <fstream>
 #include <iostream>
 #include <stdio.h>
-// #include <unistd.h>
-#include <io.h>
+#include <unistd.h>
 #include <fcntl.h>
+#include <cstdlib>
 #include <vector>
 #include "../Tokens/Token.h"
 #include "Scanner.h"

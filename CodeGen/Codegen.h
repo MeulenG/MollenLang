@@ -21,8 +21,10 @@ private:
     /* data */
 
 public:
-    std::unique_ptr<LLVMContext> TheContext;
-    std::unique_ptr<Module> TheModule;
-    std::unique_ptr<IRBuilder<>> Builder;
-    std::map<std::string, Value *> NamedValues;
+    static std::unique_ptr<LLVMContext> TheContext;
+    static std::unique_ptr<Module> TheModule;
+    static std::unique_ptr<IRBuilder<>> Builder;
+    static std::map<std::string, Value *> NamedValues;
+    
+    static void InitializeModule();
 };
